@@ -5,6 +5,7 @@ Ugly code, still learning to optimize for typing (or copy-pasting) speed
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 16   00:28:58    277      0   00:42:41    522      0
  15   00:13:46    672      0   00:20:35    251      0
  14   00:08:12    495      0   00:20:04    363      0
  13   00:14:03    886      0   00:16:39    554      0
