@@ -2,9 +2,7 @@ import re
 from collections import *
 from functools import *
 from itertools import *
-import numpy as np
-from math import prod
-import pyperclip
+#  import pyperclip
 import sys
 sys.setrecursionlimit(1000*1000*1000)
 
@@ -12,7 +10,7 @@ from heapq import heapify, heappop, heappush
 
 def cprint(t):
     print(t)
-    pyperclip.copy(t)
+    #  pyperclip.copy(t)
 
 
 def main(filename):
@@ -43,7 +41,7 @@ def main(filename):
 
         max_height = None
         for vx in range(1, x_max):
-            for vy in range(0, 900):
+            for vy in range(0, -y_min):
                 val = meets(vx, vy, 0, 0)
                 if val is not None:
                     if max_height is None or val > max_height:
@@ -74,7 +72,7 @@ def main(filename):
 
         count = 0
         for vx in range(1, x_max+1):
-            for vy in range(-100, 900):
+            for vy in range(y_min, -y_min):
                 val = meets(vx, vy, 0, 0)
                 if val is not None:
                     count += 1
