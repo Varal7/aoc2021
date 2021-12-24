@@ -194,6 +194,6 @@ def main(filename):
     #  cprint(part2())
 
 print("Test")
-main("test.txt")
+#  main("test.txt")
 print("Real")
-#  main("input.txt")
+main("input.txt")

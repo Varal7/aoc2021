@@ -128,10 +128,10 @@ def main(filename):
         final = ("AAAA", "BBBB", "CCCC", "DDDD", "E" * 12)
         return get_cost(init_state)
 
-    #  cprint(part1())
-    cprint(part2())
+    cprint(part1())
+    #  cprint(part2())
 
 print("Test")
 main("test.txt")
 print("Real")
-main("input.txt")
+#  main("input.txt")
