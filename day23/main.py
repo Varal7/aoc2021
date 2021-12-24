@@ -14,14 +14,11 @@ def cprint(t):
     pyperclip.copy(t)
 
 def main(filename):
-    with open(filename) as f:
-        lines = f.readlines()
 
     HALLWAY = 1
     LOWER = 3
     UPPER = 2
 
-    #  hallways = [ (1,1), (1,2), (1,4), (1,6), (1,8), (1,10), (1,11)]
     hallways = [1,2,4,6,8,10,11]
     base = {"A": 3, "B": 5, "C": 7, "D": 9}
     energy = {"A": 1, "B": 10, "C": 100, "D": 1000}
@@ -32,7 +29,7 @@ def main(filename):
     final = ("AA", "BB", "CC", "DD", "E" * 12)
 
     def is_base_clean(state, k):
-        return state[k2i[k]] in [f"EE", f"E{k}", f"{k}{k}"]
+        return all(c in ["E", k] for c in state[k2i[k]])
 
     def hallway_clear(state, j1, j2):
         if state[-1][j2] != "E":
@@ -69,48 +66,40 @@ def main(filename):
         for (j, k) in enumerate(sh):
             if k != "E":
                 base_col = state[k2i[k]]
+                if not is_base_clean(state, k):
+                    continue
+                n = len(base_col)
+                i = base_col.index(k) if k in base_col else n
+                new_col = "E" * (i - 1) + k * (n - i + 1)
                 if hallway_clear(state, j, base[k]):
-                    if base_col == f"EE":
-                        new_state = move(state, j, k, f"E{k}", "E")
-                        cost = (abs(j - base[k]) + 2) * energy[k]
-                        if (c := get_cost(new_state)) is not None:
-                            return cost + c
-
-                    if base_col == f"E{k}":
-                        new_state = move(state, j, k, f"{k}{k}", "E")
-                        cost = (abs(j - base[k]) + 1) * energy[k]
-                        if (c := get_cost(new_state)) is not None:
-                            return cost + c
+                    new_state = move(state, j, k, new_col, "E")
+                    cost = (abs(j - base[k]) + i) * energy[k]
+                    if (c := get_cost(new_state)) is not None:
+                        return cost + c
 
         # move to hallway
-        for (i, sk) in enumerate(state[:-1]):
-            k = i2k[i]
+        for k in "ABCD":
+            sk = state[k2i[k]]
             if not is_base_clean(state, k):
-                if sk[0] == "E":
-                    # move the bottom one
-                    moving = sk[1]
+                for (i, moving) in enumerate(sk):
+                    if moving == "E":
+                        continue
                     for j in hallways:
                         if hallway_clear(state, base[k], j):
-                            new_state = move(state, j, k, "EE", moving)
-                            cost = (abs(j - base[k]) + 2) * energy[moving]
+                            new_state = move(state, j, k, sk[:i] + "E" + sk[i+1:], moving)
+                            cost = (abs(j - base[k]) + (i+1)) * energy[moving]
                             if (c := get_cost(new_state)) is not None:
                                 candidates.append(cost + c)
-                else: # move the top one
-                    moving = sk[0]
-                    new_col = "E" + sk[1]
-                    for j in hallways:
-                        if hallway_clear(state, base[k], j):
-                            new_state = move(state, j, k, new_col, moving)
-                            cost = (abs(j - base[k]) + 1) * energy[moving]
-                            if (c := get_cost(new_state)) is not None:
-                                candidates.append(cost + c)
+
+                    break
 
         if len(candidates) == 0:
             return None
         return min(candidates)
 
     def part1():
-        nonlocal lines
+        with open(filename) as f:
+            lines = f.readlines()
         lines = [line.rstrip().replace(".", "E") for line in lines]
         sh = "E" + lines[HALLWAY][1:-1]
         sa = lines[UPPER][base["A"]] + lines[LOWER][base["A"]]
@@ -121,9 +110,26 @@ def main(filename):
         print(init_state)
         return get_cost(init_state)
 
+    def part2():
+        nonlocal final
+        with open(filename) as f:
+            lines = f.readlines()
+        lines = [line.rstrip().replace(".", "E") for line in lines]
+        extra_one = "  #D#C#B#A#"
+        extra_two = "  #D#B#A#C#"
+        lines = lines[:3] + [extra_one, extra_two] + lines[3:]
 
-    cprint(part1())
-    #  cprint(part2())
+        sh = "E" + lines[HALLWAY][1:-1]
+        ss = []
+        for k in "ABCD":
+            ss.append("".join(lines[i][base[k]] for i in range(2, 2 + 4)))
+        init_state = tuple(ss + [sh])
+        print(init_state)
+        final = ("AAAA", "BBBB", "CCCC", "DDDD", "E" * 12)
+        return get_cost(init_state)
+
+    #  cprint(part1())
+    cprint(part2())
 
 print("Test")
 main("test.txt")
